@@ -4,7 +4,7 @@ import PlayCommand from '../play'
 
 export default class ExecuteCommand {
     
-    static trigger = `${process.env.prefix}play`
+    static trigger = `${process.env.PREFIX}play`
 
     static async run (message, queues) {
         const args = message.content.split(' ')
