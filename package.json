@@ -1,0 +1,40 @@
+{
+  "name": "orfeu",
+  "version": "0.0.1",
+  "description": "A discord music bot made from the house of Hades",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --experimental-specifier-resolution=node ./src/index.js",
+    "watch": "nodemon --experimental-specifier-resolution=node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leviosar/orfeu.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "music",
+    "ffmpeg"
+  ],
+  "type": "module",
+  "author": "leviosar",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Leviosar/orfeu/issues"
+  },
+  "homepage": "https://github.com/Leviosar/orfeu#readme",
+  "dependencies": {
+    "@discordjs/opus": "^0.1.0",
+    "discord.js": "12.5.3",
+    "dotenv": "^10.0.0",
+    "ffmpeg": "0.0.4",
+    "fluent-ffmpeg": "^2.1.2",
+    "ytdl-core": "^4.9.1",
+    "ytsr": "^3.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  }
+}
