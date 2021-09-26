@@ -1,8 +1,7 @@
-import { Client } from 'discord.js'
-import Env from 'dotenv'
-import { handlers } from './commands'
+import 'dotenv/config'
 
-Env.config()
+import { Client } from 'discord.js'
+import { handlers } from './commands'
 
 const queues = new Map()
 

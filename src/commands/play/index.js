@@ -1,7 +1,4 @@
 import Youtube from 'ytdl-core'
-import Environment from 'dotenv'
-
-Environment.config()
 
 export default class PlayCommand {
 
