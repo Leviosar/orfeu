@@ -1,10 +1,15 @@
 import { Message } from 'discord.js'
+import Queue from '../../models/queue'
 
-export default class StopCommand {
+export class StopCommand {
 
-    static trigger = `${process.env.PREFIX}stop`
+    public trigger: string
 
-    static async run (message: Message, queues: Map<any, Queue>) {
+    constructor () {
+        this.trigger = `${process.env.PREFIX}stop`
+    }
+
+    async run (message: Message, queues: Map<string, Queue>) {
         const queue = queues.get(message.guild.id)
 
         if (!message.member.voice.channel) {
@@ -12,8 +17,7 @@ export default class StopCommand {
         }
 
         queue.songs = []
-
-        queue.connection.dispatcher.end()
+        queue.player.stop()
     }
     
 }

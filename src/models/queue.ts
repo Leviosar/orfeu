@@ -1,3 +1,4 @@
+import { AudioPlayer, VoiceConnection } from "@discordjs/voice"
 import { Message, StageChannel, TextBasedChannels, VoiceChannel } from "discord.js"
 import Song from "./song"
 
@@ -10,6 +11,7 @@ export default class Queue {
     public connection: VoiceConnection
     public playing: Boolean
     public volume: Number
+    public player: AudioPlayer
 
     constructor (message: Message) {
         this.id = message.guild.id

@@ -1,8 +1,8 @@
-import execute from './execute'
-import play from './play'
-import stop from './stop'
-import skip from './skip'
-import queue from './queue'
-import leave from './leave'
+import { ExecuteCommand } from './execute'
+import { PlayCommand } from './play'
+import { StopCommand } from './stop'
+import { SkipCommand } from './skip'
+import { QueueCommand } from './queue'
+import { LeaveCommand } from './leave'
 
-export const handlers = { play, execute, stop, skip, queue, leave }
+export const handlers = { ExecuteCommand, PlayCommand, StopCommand, SkipCommand, QueueCommand, LeaveCommand }
