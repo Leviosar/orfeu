@@ -7,6 +7,7 @@ export default class LeaveCommand {
 
         if (!queue) return
 
+        queue.songs = []
         await queue.voice.leave()
     }
 
