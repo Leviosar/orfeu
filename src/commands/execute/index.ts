@@ -2,10 +2,10 @@ import { joinVoiceChannel } from '@discordjs/voice'
 import { Message } from 'discord.js'
 import Youtube from 'ytdl-core'
 import YoutubeSearch, { Video } from 'ytsr'
-import Queue from '../../models/queue'
-import Song from '../../models/song'
-import { BaseCommand } from '../base/base-command'
-import { PlayCommand } from '../play'
+import Queue from '../../models/queue.js'
+import Song from '../../models/song.js'
+import { BaseCommand } from '../base/base-command.js'
+import { PlayCommand } from '../play/index.js'
 
 export class ExecuteCommand implements BaseCommand {
     public trigger: string

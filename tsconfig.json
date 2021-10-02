@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
-    "module": "system",
+    "module": "esnext",
     "preserveConstEnums": true,
     "sourceMap": false,
     "moduleResolution": "node",
-    "lib": ["ESNext"]
+    "lib": ["ESNext"],
+    "esModuleInterop": true,
+    "target": "ESNext"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

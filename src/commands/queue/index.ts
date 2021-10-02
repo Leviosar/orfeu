@@ -1,4 +1,4 @@
-import { Message } from "discord.js"
+import { Message, MessageEmbed, MessageEmbedOptions } from "discord.js"
 import Queue from "../../models/queue"
 
 export class QueueCommand {
@@ -18,10 +18,16 @@ export class QueueCommand {
             let content = ""
             
             for (let i = 0; i < queue.songs.length; i++) {
-                content += `${i + 1} - ${queue.songs[i].title} \n`            
+                content += `\`${i + 1}.\` [${queue.songs[i].title} \n](${queue.songs[i].url})`
+                
             }
 
-            message.channel.send(content)
+            message.channel.send({
+                embeds: [{
+                    color: 0,
+                    description: content
+                }]
+            })
         }
     }
 

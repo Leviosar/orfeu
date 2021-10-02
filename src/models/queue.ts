@@ -10,7 +10,7 @@ export default class Queue {
     public songs: Song[]
     public connection: VoiceConnection
     public playing: Boolean
-    public volume: Number
+    public volume: number
     public player: AudioPlayer
 
     constructor (message: Message) {

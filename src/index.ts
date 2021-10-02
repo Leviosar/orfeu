@@ -1,50 +1,29 @@
 import 'dotenv/config'
 
-import { Client } from 'discord.js'
-import { ExecuteCommand } from './commands/execute'
-import { SkipCommand } from './commands/skip'
-import { LeaveCommand } from './commands/leave'
-import { StopCommand } from './commands/stop'
-import { QueueCommand } from './commands/queue'
-import { BaseCommand } from './commands/base/base-command'
+import { Client, Intents } from 'discord.js'
+import ReadyEvent from './events/ready.js'
+import MessageEvent from './events/message.js'
+import BotEvent from './models/bot-event.js'
 
-const queues = new Map()
-
-const commands: BaseCommand[] = [
-    new ExecuteCommand(),
-    new SkipCommand(),
-    new LeaveCommand(),
-    new StopCommand(),
-    new QueueCommand()
-]
+const events = [
+    ReadyEvent,
+    MessageEvent
+] as BotEvent[]
 
 try {
-    const client = new Client({intents: []})
+    const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES]})
     
-    client.login(process.env.BOT_TOKEN)
+    await client.login(process.env.BOT_TOKEN)
 
-    client.once('ready', () => {
-        console.log('Ready!')
-    })
-    
-    client.on('message', async message => {
-        if(message.author.bot) return
-    
-        if(!message.content.startsWith(process.env.PREFIX)) return
-        
-        let valid = false
+    for (const event of events) {
+        if (event.once) {
+            client.once(event.name, (...args) => event.execute(...args))
+        } else {
+            client.on(event.name, (...args) => event.execute(...args))
+        }
 
-        for (const command of commands) {
-            if(message.content.startsWith(command.trigger)) {
-                command.run(message, queues)
-                valid = true
-            }
-        }
-        
-        if (!valid) {
-            message.channel.send('You need to enter a valid command!')
-        }
-    })
+        console.log(`Event ${event.name} was registered`)
+    }
 } catch (error) {
     console.log(error)
 }
