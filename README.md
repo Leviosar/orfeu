@@ -1,16 +1,3 @@
-<style>
-    div.logo-wrapper {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    div.logo-wrapper > img {
-        height: 150px;
-    }
-</style>
-
 <div class="logo-wrapper">
     <img src="./src/assets/icon_letters.png">
 </div>
