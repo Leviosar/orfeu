@@ -18,6 +18,8 @@ export class StopCommand {
 
         queue.songs = []
         queue.player.stop()
+        
+        return message.channel.send("Please don't stop the music! 🎶")
     }
     
 }
