@@ -17,7 +17,7 @@ export class QueueCommand {
         } else {
             let content = ""
             
-            for (let i = 0; i < queue.songs.length; i++) {
+            for (let i = 0; i < Math.min(queue.songs.length, 10); i++) {
                 content += `\`${i + 1}.\` [${queue.songs[i].title} \n](${queue.songs[i].url})`
                 
             }
@@ -25,6 +25,7 @@ export class QueueCommand {
             message.channel.send({
                 embeds: [{
                     color: 0,
+                    title: `There's currently ${queue.songs.length} songs on the queue`,
                     description: content
                 }]
             })
