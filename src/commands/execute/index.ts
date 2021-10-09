@@ -1,5 +1,5 @@
-import { joinVoiceChannel } from '@discordjs/voice'
-import { Message } from 'discord.js'
+import { joinVoiceChannel, VoiceConnection } from '@discordjs/voice'
+import { Message, StageChannel, VoiceChannel, VoiceState } from 'discord.js'
 import Youtube from 'ytdl-core'
 import YoutubeSearch, { Video } from 'ytsr'
 import YoutubePlaylist from 'ytpl'
@@ -18,11 +18,14 @@ export class ExecuteCommand implements BaseCommand {
 
     async run (message: Message, queues: Map<string, Queue>) {
         const args = message.content.split(' ')
-        const queue = queues.get(message.guild.id)
         const voice = message.member.voice.channel
 
         if (!voice) {
             return message.channel.send("You need to be in a voice channel to play music!")
+        }
+
+        if (!args[1]) {
+            return message.channel.send("The search string should not be empty.")
         }
 
         const permissions = voice.permissionsFor(message.client.user)
@@ -95,43 +98,45 @@ export class ExecuteCommand implements BaseCommand {
         }
     }
 
+    async connectToVoice(voice: VoiceChannel) : Promise<VoiceConnection | false> {
+        try {
+            return joinVoiceChannel({
+                channelId: voice.id,
+                guildId: voice.guild.id,
+                adapterCreator: voice.guild.voiceAdapterCreator
+            })
+        } catch (err) {
+            return false
+        }
+    }
+
     async addVideoToPlaylist(message: Message, queues: Map<string, Queue>, song: Song | Song[]) : Promise<Boolean> {
-        const queue = queues.get(message.guild.id)
-        const voice = message.member.voice.channel
-
+        const voice = message.member.voice.channel as VoiceChannel
+        let queue = queues.get(message.guild.id)
+        
         if (!queue) {
-            const queue = new Queue(message)
-
-            if (song instanceof Song) {
-                queue.songs.push(song)
-            } else {
-                queue.songs = queue.songs.concat(song)
-            }
-
+            queue = new Queue(message)
             queues.set(message.guild.id, queue)
+        }
 
-            try {
-                queue.connection = await joinVoiceChannel({
-                    channelId: voice.id,
-                    guildId: voice.guild.id,
-                    adapterCreator: voice.guild.voiceAdapterCreator
-                })
+        if (song instanceof Song) {
+            queue.songs.push(song)
+        } else {
+            queue.songs = queue.songs.concat(song)
+        }
 
+        if (!queue.connection) {
+            let connection = await this.connectToVoice(voice)
+            if (connection) {
+                queue.connection = connection
                 new PlayCommand().run(message, queues)
                 return true
-            } catch (err) {
+            } else {
                 queues.delete(message.guild.id)
                 message.channel.send("Couldn't join voice channel")
                 return false
             }
-        } else {
-            if (song instanceof Song) {
-                queue.songs.push(song)
-            } else {
-                queue.songs = queue.songs.concat(song)
-            }
-
-            return true
         }
+        return true
     }
 }

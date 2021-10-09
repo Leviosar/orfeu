@@ -12,7 +12,7 @@ export class QueueCommand {
     run (message: Message, queues: Map<string, Queue>) {
         const queue = queues.get(message.guild.id)
 
-        if (queue.songs.length == 0) {
+        if (!queue || queue.songs.length == 0) {
             message.channel.send("Queue is empty")
         } else {
             let content = ""
