@@ -16,6 +16,7 @@ export class LeaveCommand {
 
         queue.songs = []
         queue.connection.destroy()
+        queue.connection = null
     }
 
 }

@@ -6,7 +6,8 @@
     "moduleResolution": "node",
     "lib": ["ESNext"],
     "esModuleInterop": true,
-    "target": "ESNext"
+    "target": "ESNext",
+    "outDir": "./build/"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
