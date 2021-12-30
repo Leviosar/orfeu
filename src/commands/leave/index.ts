@@ -1,4 +1,5 @@
 import { Message } from "discord.js"
+import Log from "../../logger/index.js"
 import Queue from "../../models/queue"
 
 export class LeaveCommand {
@@ -10,6 +11,7 @@ export class LeaveCommand {
     }
 
     async run (message: Message, queues: Map<string, Queue>) {
+        Log.command(`(#${message.author.id}) - ${message.author.username} - Called LeaveCommand`)
         const queue = queues.get(message.guild.id)
 
         if (!queue) return

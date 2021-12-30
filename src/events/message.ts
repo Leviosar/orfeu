@@ -1,4 +1,5 @@
 import { Message } from "discord.js"
+import Winston from "winston"
 import { BaseCommand } from "../commands/base/base-command"
 import { ExecuteCommand } from "../commands/execute/index.js"
 import { LeaveCommand } from "../commands/leave/index.js"
@@ -18,7 +19,7 @@ const commands: BaseCommand[] = [
 ]
 
 export default {
-    name: 'messageCreate',
+    name: "messageCreate",
     once: false,
     execute (message: Message) {
         if(message.author.bot) return
@@ -35,7 +36,7 @@ export default {
         }
         
         if (!valid) {
-            message.channel.send('You need to enter a valid command!')
+            message.channel.send("You need to enter a valid command!")
         }
     }
 } as BotEvent

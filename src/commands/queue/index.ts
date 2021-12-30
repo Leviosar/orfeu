@@ -1,4 +1,5 @@
 import { Message, MessageEmbed, MessageEmbedOptions } from "discord.js"
+import Log from "../../logger/index.js"
 import Queue from "../../models/queue"
 
 export class QueueCommand {
@@ -10,6 +11,7 @@ export class QueueCommand {
     }
 
     run (message: Message, queues: Map<string, Queue>) {
+        Log.command(`(#${message.author.id}) - ${message.author.username} - Called QueueCommand`)
         const queue = queues.get(message.guild.id)
 
         if (!queue || queue.songs.length == 0) {

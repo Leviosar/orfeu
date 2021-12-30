@@ -1,12 +1,13 @@
-import { joinVoiceChannel, VoiceConnection } from '@discordjs/voice'
-import { Message, StageChannel, VoiceChannel, VoiceState } from 'discord.js'
-import Youtube from 'ytdl-core'
-import YoutubeSearch, { Video } from 'ytsr'
-import YoutubePlaylist from 'ytpl'
-import Queue from '../../models/queue.js'
-import Song from '../../models/song.js'
-import { BaseCommand } from '../base/base-command.js'
-import { PlayCommand } from '../play/index.js'
+import { joinVoiceChannel, VoiceConnection } from "@discordjs/voice"
+import { Message, StageChannel, VoiceChannel, VoiceState } from "discord.js"
+import Youtube from "ytdl-core"
+import YoutubeSearch, { Video } from "ytsr"
+import YoutubePlaylist from "ytpl"
+import Queue from "../../models/queue.js"
+import Song from "../../models/song.js"
+import { BaseCommand } from "../base/base-command.js"
+import { PlayCommand } from "../play/index.js"
+import Log from "../../logger/index.js"
 
 export class ExecuteCommand implements BaseCommand {
     public trigger: string
@@ -17,7 +18,8 @@ export class ExecuteCommand implements BaseCommand {
     }
 
     async run (message: Message, queues: Map<string, Queue>) {
-        const args = message.content.split(' ')
+        Log.command(`(#${message.author.id}) - ${message.author.username} - Called PlayCommand`)
+        const args = message.content.split(" ")
         const voice = message.member.voice.channel
 
         if (!voice) {
@@ -46,16 +48,34 @@ export class ExecuteCommand implements BaseCommand {
     async handleURL(message: Message, queues: Map<string, Queue>) {
         const args = message.content.split(" ")
         const info = await Youtube.getBasicInfo(args[1])
-        const song = new Song(info.videoDetails.title, info.videoDetails.video_url)
-        
-        if (await this.addVideoToPlaylist(message, queues, song)) {
+
+        const duration = new Date(0)
+        duration.setSeconds(parseInt(info.videoDetails.lengthSeconds))
+
+        const song = new Song(
+            info.videoDetails.title, 
+            info.videoDetails.video_url, 
+            duration.toISOString().substring(14, 19),
+            info.videoDetails.author.name,
+            info.videoDetails.thumbnail.thumbnails[0].url
+        )
+
+        if (await this.addSongsToQueue(message, queues, [song])) {
             const queue = queues.get(message.guild.id)
 
             message.channel.send({
                 embeds: [{
                     title: song.title,
                     color: 0,
-                    description: `Was added on the queue. (#${queue.songs.length})`
+                    description: `Was added on the queue. (#${queue.songs.length})`,
+                    image: {
+                        url: song.thumbnail
+                    },
+                    fields: [
+                        { name: "Author", value: song.author, inline: true },
+                        { name: "Duration", value: song.duration, inline: true },
+                        { name: "Source", value: song.url }
+                    ]
                 }]
             })
         }
@@ -65,8 +85,8 @@ export class ExecuteCommand implements BaseCommand {
         const args = message.content.split(" ")
         const info = await YoutubePlaylist(args[1], { limit: Infinity })
         
-        const songs = info.items.map(item => new Song(item.title, item.url))
-        this.addVideoToPlaylist(message, queues, songs)
+        const songs = info.items.map(item => new Song(item.title, item.url, item.duration, item.author.name, item.bestThumbnail.url))
+        this.addSongsToQueue(message, queues, songs)
 
         message.channel.send({
             embeds: [{
@@ -81,18 +101,31 @@ export class ExecuteCommand implements BaseCommand {
         const args = message.content.split(" ")
         
         args.shift()
+
+        if (args.join().toLowerCase().includes("armandinho")) {
+            message.channel.send("Para com isso Marcão")
+        }
+
         const info = await YoutubeSearch(args.join(), {limit: 1})
         const video: Video = info.items[0] as Video
-        const song = new Song(video.title, video.url)
+        const song = new Song(video.title, video.url, video.duration, video.author.name, video.thumbnails[0].url)
 
-        if (await this.addVideoToPlaylist(message, queues, song)) {
+        if (await this.addSongsToQueue(message, queues, [song])) {
             const queue = queues.get(message.guild.id)
 
             message.channel.send({
                 embeds: [{
                     title: song.title,
                     color: 0,
-                    description: `Was added on the queue. (#${queue.songs.length})`
+                    description: `Was added on the queue. (#${queue.songs.length})`,
+                    image: {
+                        url: song.thumbnail
+                    },
+                    fields: [
+                        { name: "Author", value: song.author, inline: true },
+                        { name: "Duration", value: song.duration, inline: true },
+                        { name: "Source", value: song.url }
+                    ]
                 }]
             })
         }
@@ -110,7 +143,7 @@ export class ExecuteCommand implements BaseCommand {
         }
     }
 
-    async addVideoToPlaylist(message: Message, queues: Map<string, Queue>, song: Song | Song[]) : Promise<Boolean> {
+    async addSongsToQueue(message: Message, queues: Map<string, Queue>, songs: Song[]) : Promise<Boolean> {
         const voice = message.member.voice.channel as VoiceChannel
         let queue = queues.get(message.guild.id)
         
@@ -119,14 +152,13 @@ export class ExecuteCommand implements BaseCommand {
             queues.set(message.guild.id, queue)
         }
 
-        if (song instanceof Song) {
-            queue.songs.push(song)
-        } else {
-            queue.songs = queue.songs.concat(song)
-        }
+        queue.songs = queue.songs.concat(songs)
+
+        songs.forEach((song) => Log.song(`(#${message.author.id}) - ${message.author.username} - added ${song.title}`))
 
         if (!queue.connection) {
             let connection = await this.connectToVoice(voice)
+
             if (connection) {
                 queue.connection = connection
                 new PlayCommand().run(message, queues)
@@ -137,6 +169,7 @@ export class ExecuteCommand implements BaseCommand {
                 return false
             }
         }
+
         return true
     }
 }

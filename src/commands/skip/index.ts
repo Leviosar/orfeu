@@ -1,4 +1,5 @@
 import { Message } from "discord.js"
+import Log from "../../logger/index.js"
 import Queue from "../../models/queue"
 
 export class SkipCommand {
@@ -10,6 +11,8 @@ export class SkipCommand {
     }
 
     run (message: Message, queues: Map<string, Queue>) {
+        Log.command(`(#${message.author.id}) - ${message.author.username} - Called SkipCommand`)
+
         const queue = queues.get(message.guild.id)
 
         if (!message.member.voice.channel) {

@@ -1,5 +1,6 @@
-import { Message } from 'discord.js'
-import Queue from '../../models/queue'
+import { Message } from "discord.js"
+import Log from "../../logger/index.js"
+import Queue from "../../models/queue"
 
 export class StopCommand {
 
@@ -10,6 +11,8 @@ export class StopCommand {
     }
 
     async run (message: Message, queues: Map<string, Queue>) {
+        Log.command(`(#${message.author.id}) - ${message.author.username} - Called StopCommand`)
+
         const queue = queues.get(message.guild.id)
 
         if (!message.member.voice.channel) {
